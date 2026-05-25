@@ -422,6 +422,20 @@ Business recommendation:
 
 ## How to Run
 
+## Streamlit Dashboard
+
+Run the interactive churn prediction dashboard:
+
+```bash
+streamlit run app/streamlit_app.py
+
+The dashboard allows users to:
+- View dataset overview
+- Review model performance summary
+- Inspect key churn drivers
+- Enter customer characteristics
+- Predict churn risk probability for a sample customer 
+
 ### 1. Clone the repository
 
 ```bash
