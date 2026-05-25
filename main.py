@@ -7,8 +7,17 @@ from src.preprocessing import (
 )
 from src.models import get_models, train_models
 from src.evaluation import evaluate_all_models
-from src.visualization import plot_churn_distribution, plot_model_comparison
-from src.utils import save_results, print_best_model
+from src.visualization import (
+    plot_churn_distribution,
+    plot_model_comparison,
+    plot_feature_importance,
+)
+from src.utils import (
+    save_results,
+    print_best_model,
+    extract_feature_importance,
+    save_feature_importance,
+)
 
 
 def main():
@@ -53,6 +62,20 @@ def main():
     save_results(results_df)
     print_best_model(results_df)
     plot_model_comparison(results_df)
+
+    print("\nExtracting feature importance from Gradient Boosting...")
+    gradient_boosting_model = trained_models["Gradient Boosting"]
+
+    feature_importance_df = extract_feature_importance(
+        gradient_boosting_model,
+        top_n=25,
+    )
+
+    print("\nTop feature importances:")
+    print(feature_importance_df)
+
+    save_feature_importance(feature_importance_df)
+    plot_feature_importance(feature_importance_df)
 
 
 if __name__ == "__main__":

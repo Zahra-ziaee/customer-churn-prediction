@@ -42,3 +42,24 @@ def plot_churn_distribution(df: pd.DataFrame) -> None:
     plt.close()
 
     print(f"Saved chart: {output_path}")
+
+
+def plot_feature_importance(feature_importance_df: pd.DataFrame) -> None:
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
+    plot_df = feature_importance_df.sort_values(
+        by="importance",
+        ascending=True,
+    )
+
+    plt.figure(figsize=(10, 8))
+    plt.barh(plot_df["feature"], plot_df["importance"])
+    plt.title("Top Feature Importances - Gradient Boosting")
+    plt.xlabel("Importance")
+    plt.tight_layout()
+
+    output_path = FIGURES_DIR / "feature_importance_gradient_boosting.png"
+    plt.savefig(output_path, dpi=300)
+    plt.close()
+
+    print(f"Saved chart: {output_path}")
