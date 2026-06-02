@@ -1,59 +1,106 @@
 # Customer Churn Prediction
 
-A machine learning project for predicting telecom customer churn using customer demographics, service usage, contract information, billing data, and revenue-related features.
+A business-oriented machine learning project for predicting telecom customer churn using customer demographics, service information, contract details, billing behavior, and revenue features.
 
-This project is designed as a portfolio-ready data science project. It covers the full workflow from data loading and preprocessing to model training, evaluation, feature importance analysis, visualization, and business interpretation.
+This project focuses on churn analysis, model comparison, feature importance, business interpretation, and an interactive Streamlit dashboard.
 
 ---
 
 ## Project Overview
 
-Customer churn is one of the most important business problems in telecom and subscription-based companies. Losing existing customers is often more expensive than retaining them, so identifying customers who are likely to churn can help companies design targeted retention strategies.
+Customer churn prediction helps businesses identify customers who are likely to leave and take proactive retention actions.
 
-This project predicts whether a telecom customer is likely to churn using the Maven Analytics Telecom Customer Churn dataset.
+This project analyzes telecom customer data and builds machine learning models to predict churn risk.
 
 The project includes:
 
 - Data loading
-- Data preprocessing
+- Data cleaning
 - Missing value handling
 - Feature engineering
 - Binary churn target creation
-- Train/test split with stratification
+- Train/test split
 - Logistic Regression baseline
 - Random Forest model
 - Gradient Boosting model
-- Classification metrics
-- ROC-AUC comparison
+- Model comparison
+- ROC-AUC evaluation
 - Feature importance analysis
-- Result visualizations
-- Business insights
+- Business churn insights
+- Streamlit dashboard
+- Interactive churn risk prediction demo
+
+This project is focused on **business ML analysis and model interpretation**.
+
+A separate project, `churn-mlops-pipeline`, focuses on MLOps, FastAPI, Docker, testing, and deployment-style structure.
+
+---
+
+## Business Problem
+
+Telecom companies often lose customers due to contract flexibility, pricing, poor service experience, lack of support, or competitive offers.
+
+The goal of this project is to answer:
+
+```text
+Which customers are more likely to churn?
+Which features are most associated with churn?
+Which model performs best?
+How can churn prediction support business retention actions?
+```
 
 ---
 
 ## Dataset
 
-The dataset used in this project is the Maven Analytics Telecom Customer Churn dataset.
+The project uses a telecom customer churn dataset.
 
-Raw files used:
+The dataset includes:
+
+- Customer demographics
+- Contract information
+- Internet service information
+- Online security and support services
+- Billing and payment information
+- Tenure
+- Monthly charges
+- Total charges
+- Total revenue
+- Customer churn status
+
+Dataset overview:
+
+| Metric | Value |
+|---|---:|
+| Customers | 7,043 |
+| Features | 32 |
+| Churn Rate | 26.54% |
+
+The raw dataset is excluded from GitHub using `.gitignore`.
+
+Expected raw data location:
 
 ```text
-data/raw/telecom_customer_churn.csv
-data/raw/telecom_zipcode_population.csv
-data/raw/telecom_data_dictionary.csv
+data/raw/
 ```
 
-The raw and processed datasets are excluded from GitHub using `.gitignore`.
+---
 
-The main customer churn file contains:
+## Target Definition
 
-- Customer demographic information
-- Location information
-- Service subscriptions
-- Contract and billing information
-- Revenue-related variables
-- Customer churn status
-- Churn category and churn reason
+The original customer status column is converted into a binary churn target.
+
+| Customer Status | Churn |
+|---|---:|
+| Churned | 1 |
+| Stayed | 0 |
+| Joined | 0 |
+
+The target variable used for modeling is:
+
+```text
+Churn
+```
 
 ---
 
@@ -69,27 +116,25 @@ customer-churn-prediction/
 │   ├── raw/
 │   └── processed/
 │
-├── notebooks/
-│
 ├── results/
 │   ├── figures/
 │   │   ├── churn_distribution.png
-│   │   ├── feature_importance_gradient_boosting.png
-│   │   ├── model_comparison_accuracy.png
-│   │   ├── model_comparison_precision.png
-│   │   ├── model_comparison_recall.png
-│   │   ├── model_comparison_f1.png
-│   │   └── model_comparison_roc_auc.png
+│   │   ├── model_comparison_roc_auc.png
+│   │   └── feature_importance_gradient_boosting.png
 │   │
-│   ├── feature_importance.csv
-│   └── model_results.csv
+│   ├── model_results.csv
+│   └── feature_importance.csv
+│
+├── screenshots/
+│   ├── customer_churn_dashboard_overview.png
+│   └── customer_churn_prediction_demo.png
 │
 ├── src/
 │   ├── __init__.py
 │   ├── config.py
 │   ├── data_loader.py
 │   ├── preprocessing.py
-│   ├── models.py
+│   ├── train.py
 │   ├── evaluation.py
 │   ├── visualization.py
 │   └── utils.py
@@ -106,147 +151,83 @@ customer-churn-prediction/
 
 ### 1. Data Loading
 
-The project loads three raw CSV files:
+The raw telecom churn dataset is loaded using Python and Pandas.
 
-- Customer churn data
-- Zip code population data
-- Data dictionary
+The data loading stage checks:
 
-The main modeling dataset is `telecom_customer_churn.csv`.
+- Dataset shape
+- Column names
+- Missing values
+- Target distribution
+- Basic data quality issues
 
 ---
 
-### 2. Target Definition
+### 2. Data Cleaning
 
-The original target column is:
+The cleaning process includes:
+
+- Standardizing column names
+- Handling missing values
+- Removing irrelevant columns
+- Converting categorical and numerical variables
+- Preparing the churn target column
+
+---
+
+### 3. Feature Engineering
+
+The project uses customer-level features such as:
 
 ```text
-Customer Status
+Age
+Tenure in Months
+Monthly Charge
+Total Charges
+Total Revenue
+Number of Referrals
+Contract
+Internet Type
+Online Security
+Premium Tech Support
+Payment Method
 ```
 
-It is converted into a binary churn target:
-
-| Customer Status | Churn |
-|---|---:|
-| Churned | 1 |
-| Stayed | 0 |
-| Joined | 0 |
-
-This turns the problem into a binary classification task.
+These features help the model learn customer churn patterns.
 
 ---
 
-### 3. Data Leakage Prevention
+### 4. Train/Test Split
 
-The following columns are removed before modeling:
+The dataset is split into training and testing sets.
+
+The split is stratified to preserve the churn distribution in both sets.
+
+---
+
+## Models
+
+The project compares multiple machine learning models:
 
 ```text
-Customer ID
-Churn Category
-Churn Reason
-Customer Status
+Logistic Regression
+Random Forest
+Gradient Boosting
 ```
 
-`Churn Category` and `Churn Reason` are removed because they are only known after a customer has already churned. Including them would create data leakage.
-
----
-
-### 4. Missing Value Handling
-
-Missing values are handled based on business meaning.
-
-For example:
-
-- Missing internet-related service values are treated as `No Internet Service`.
-- Missing phone-line related values are treated as `No Phone Service`.
-- Missing numeric usage values are filled with `0`.
-
-This preserves business meaning instead of blindly dropping rows.
-
----
-
-### 5. Model Training
-
-The project trains and compares three classification models:
-
-- Logistic Regression
-- Random Forest
-- Gradient Boosting
-
-The data is split using stratified train/test split to preserve the churn ratio in both sets.
-
----
-
-## Dataset Summary
-
-The raw dataset contains:
-
-| Metric | Value |
-|---|---:|
-| Rows | 7,043 |
-| Columns | 38 |
-
-After preprocessing:
-
-| Metric | Value |
-|---|---:|
-| Rows | 7,043 |
-| Features | 32 |
-| Target column | Churn |
-
-Target distribution:
-
-| Class | Meaning | Count | Percentage |
-|---|---|---:|---:|
-| 0 | Not Churned | 5,174 | 73.46% |
-| 1 | Churned | 1,869 | 26.54% |
-
-Train/test split:
-
-| Split | Shape |
-|---|---:|
-| X_train | 5,634 × 32 |
-| X_test | 1,409 × 32 |
-| y_train | 5,634 |
-| y_test | 1,409 |
-
----
-
-## Evaluation Metrics
-
-The models are evaluated using:
-
-- Accuracy
-- Precision
-- Recall
-- F1-score
-- ROC-AUC
-- Confusion Matrix
-- Classification Report
-
-For churn prediction, **Recall** is especially important because missing a customer who is likely to churn can be costly for the business.
-
----
-
-## Model Results
-
-| Model | Accuracy | Precision | Recall | F1-score | ROC-AUC |
-|---|---:|---:|---:|---:|---:|
-| Gradient Boosting | 0.8460 | 0.7357 | 0.6551 | 0.6931 | 0.9115 |
-| Logistic Regression | 0.7835 | 0.5628 | 0.8262 | 0.6696 | 0.8918 |
-| Random Forest | 0.7729 | 0.5500 | 0.7941 | 0.6499 | 0.8701 |
+The goal is not only to train a model but also to compare model performance and interpret churn drivers.
 
 ---
 
 ## Best Model
 
-The best overall model based on ROC-AUC is:
+The best-performing model is:
 
 ```text
 Gradient Boosting
 ```
 
-Final performance:
+Model performance:
 
 | Metric | Value |
 |---|---:|
@@ -256,135 +237,106 @@ Final performance:
 | F1-score | 0.6931 |
 | ROC-AUC | 0.9115 |
 
-Gradient Boosting achieved the best overall ROC-AUC and the strongest balance between precision and recall.
-
-However, Logistic Regression achieved the highest churn recall:
-
-| Model | Churn Recall |
-|---|---:|
-| Logistic Regression | 0.8262 |
-| Random Forest | 0.7941 |
-| Gradient Boosting | 0.6551 |
-
-This means Logistic Regression may be more useful when the business goal is to identify as many at-risk customers as possible, even if it creates more false positives.
-
 ---
 
-## Confusion Matrix Results
+## Model Comparison
 
-### Logistic Regression
+The project compares models using classification metrics and ROC-AUC.
 
-```text
-[[795 240]
- [ 65 309]]
-```
-
-Logistic Regression correctly detected 309 churned customers and missed 65 churned customers.
-
----
-
-### Random Forest
+Model comparison output is saved to:
 
 ```text
-[[792 243]
- [ 77 297]]
+results/model_results.csv
 ```
 
-Random Forest correctly detected 297 churned customers and missed 77 churned customers.
+Main evaluation criteria:
 
----
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- ROC-AUC
 
-### Gradient Boosting
-
-```text
-[[947  88]
- [129 245]]
-```
-
-Gradient Boosting produced fewer false positives and achieved stronger precision, but missed more churned customers than Logistic Regression.
+ROC-AUC is especially useful because churn prediction is a risk-scoring problem, not only a hard classification task.
 
 ---
 
 ## Feature Importance
 
-Feature importance was extracted from the Gradient Boosting model.
+The Gradient Boosting model is used to identify important churn drivers.
 
-Top churn drivers:
+Important churn drivers include:
 
-| Rank | Feature | Importance |
-|---:|---|---:|
-| 1 | Contract_Month-to-Month | 0.3504 |
-| 2 | Number of Referrals | 0.1233 |
-| 3 | Age | 0.0783 |
-| 4 | Monthly Charge | 0.0647 |
-| 5 | Tenure in Months | 0.0643 |
-| 6 | Number of Dependents | 0.0573 |
-| 7 | Online Security_No | 0.0431 |
-| 8 | Premium Tech Support_No | 0.0349 |
-| 9 | Total Revenue | 0.0246 |
-| 10 | City_San Diego | 0.0235 |
+- Month-to-month contracts
+- Number of referrals
+- Age
+- Monthly charge
+- Tenure in months
+- Lack of online security
+- Lack of premium tech support
+
+Feature importance output is saved to:
+
+```text
+results/feature_importance.csv
+```
 
 ---
 
 ## Business Insights
 
-Based on the model and feature importance analysis, the strongest churn-related patterns are:
+### 1. Month-to-month contracts increase churn risk
 
-### 1. Month-to-month contracts are the strongest churn driver
-
-Customers with month-to-month contracts are much more likely to churn compared with customers on one-year or two-year contracts.
+Customers with month-to-month contracts are more flexible and can leave more easily.
 
 Business recommendation:
 
-- Offer discounts or loyalty benefits for customers who switch to longer-term contracts.
-- Target month-to-month customers with retention campaigns.
+- Encourage customers to switch to annual or longer-term contracts.
+- Offer loyalty discounts for longer contracts.
 
 ---
 
-### 2. Referrals are strongly related to customer retention
+### 2. Low referrals may indicate weak customer engagement
 
-`Number of Referrals` is one of the most important features. Customers who refer others are likely more engaged and less likely to churn.
+Customers with fewer referrals may have lower satisfaction or weaker brand loyalty.
 
 Business recommendation:
 
-- Improve referral programs.
-- Offer referral-based discounts or loyalty points.
-- Monitor customers with zero referrals as a potential risk group.
+- Create referral incentives.
+- Target low-referral customers with engagement campaigns.
 
 ---
 
-### 3. Monthly charge is an important churn factor
+### 3. Monthly charges are associated with churn
 
-Higher monthly charges may increase churn risk, especially if customers do not perceive enough value from their services.
+Higher monthly charges can increase churn risk if customers do not perceive enough value.
 
 Business recommendation:
 
-- Identify high-charge customers with low service usage.
-- Offer personalized bundles or discounts.
-- Improve value communication for premium plans.
+- Review pricing strategy.
+- Offer personalized retention discounts to high-risk customers.
 
 ---
 
-### 4. Tenure matters
+### 4. Short tenure customers need early retention programs
 
-Customer tenure is an important churn predictor. Shorter-tenure customers may not yet be loyal, while long-tenure customers may need loyalty rewards.
+Customers with shorter tenure may not yet be loyal to the company.
 
 Business recommendation:
 
-- Create onboarding campaigns for new customers.
-- Create loyalty campaigns for long-term customers.
+- Build onboarding campaigns.
+- Monitor new customers during the first months of service.
 
 ---
 
-### 5. Missing support/security services increase churn risk
+### 5. Lack of online security or premium support can increase churn risk
 
-Customers without online security or premium tech support appear more likely to churn.
+Customers without support or security services may experience lower perceived service value.
 
 Business recommendation:
 
-- Offer free trials of online security and premium support.
-- Bundle support services with internet plans.
-- Target customers without these services for retention offers.
+- Offer bundled online security and premium support packages.
+- Use churn risk scores to target support-based upsell campaigns.
 
 ---
 
@@ -394,23 +346,7 @@ Business recommendation:
 
 ![Churn Distribution](results/figures/churn_distribution.png)
 
-### Model Comparison - Accuracy
-
-![Model Comparison Accuracy](results/figures/model_comparison_accuracy.png)
-
-### Model Comparison - Precision
-
-![Model Comparison Precision](results/figures/model_comparison_precision.png)
-
-### Model Comparison - Recall
-
-![Model Comparison Recall](results/figures/model_comparison_recall.png)
-
-### Model Comparison - F1-score
-
-![Model Comparison F1](results/figures/model_comparison_f1.png)
-
-### Model Comparison - ROC-AUC
+### Model Comparison by ROC-AUC
 
 ![Model Comparison ROC-AUC](results/figures/model_comparison_roc_auc.png)
 
@@ -420,21 +356,44 @@ Business recommendation:
 
 ---
 
-## How to Run
-
 ## Streamlit Dashboard
 
-Run the interactive churn prediction dashboard:
+The project includes a Streamlit dashboard for business-facing churn analysis.
+
+Run the dashboard:
 
 ```bash
 streamlit run app/streamlit_app.py
+```
 
-The dashboard allows users to:
-- View dataset overview
-- Review model performance summary
-- Inspect key churn drivers
-- Enter customer characteristics
-- Predict churn risk probability for a sample customer 
+The dashboard includes:
+
+- Dataset overview
+- Customer count
+- Feature count
+- Churn rate
+- Best model summary
+- Business context
+- Interactive customer risk input
+- Churn probability prediction
+- Prediction interpretation
+- Generated project outputs
+
+---
+
+## Dashboard Preview
+
+### Customer Churn Dashboard Overview
+
+![Customer Churn Dashboard Overview](screenshots/customer_churn_dashboard_overview.png)
+
+### Customer Churn Prediction Demo
+
+![Customer Churn Prediction Demo](screenshots/customer_churn_prediction_demo.png)
+
+---
+
+## How to Run
 
 ### 1. Clone the repository
 
@@ -443,7 +402,7 @@ git clone https://github.com/Zahra-ziaee/customer-churn-prediction.git
 cd customer-churn-prediction
 ```
 
-### 2. Create and activate a virtual environment
+### 2. Create and activate virtual environment
 
 Windows PowerShell:
 
@@ -458,20 +417,24 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 4. Add the dataset
+### 4. Add dataset
 
-Download the Maven Analytics Telecom Customer Churn dataset and place the files here:
+Place the raw telecom churn dataset in:
 
 ```text
-data/raw/telecom_customer_churn.csv
-data/raw/telecom_zipcode_population.csv
-data/raw/telecom_data_dictionary.csv
+data/raw/
 ```
 
-### 5. Run the project
+### 5. Run the machine learning pipeline
 
 ```bash
 python main.py
+```
+
+### 6. Run the Streamlit dashboard
+
+```bash
+streamlit run app/streamlit_app.py
 ```
 
 ---
@@ -487,12 +450,45 @@ results/model_results.csv
 results/feature_importance.csv
 
 results/figures/churn_distribution.png
-results/figures/model_comparison_accuracy.png
-results/figures/model_comparison_precision.png
-results/figures/model_comparison_recall.png
-results/figures/model_comparison_f1.png
 results/figures/model_comparison_roc_auc.png
 results/figures/feature_importance_gradient_boosting.png
+
+screenshots/customer_churn_dashboard_overview.png
+screenshots/customer_churn_prediction_demo.png
+```
+
+---
+
+## Difference from Churn MLOps Pipeline
+
+This repository focuses on:
+
+```text
+Business ML analysis
+Model comparison
+Feature importance
+Churn drivers
+Business recommendations
+Streamlit dashboard
+```
+
+The separate `churn-mlops-pipeline` repository focuses on:
+
+```text
+MLOps-style structure
+Saved model artifact
+FastAPI prediction service
+Swagger documentation
+Docker
+Pytest
+Deployment-oriented workflow
+```
+
+This separation helps keep the portfolio clear:
+
+```text
+customer-churn-prediction = analytical machine learning project
+churn-mlops-pipeline = production-style MLOps project
 ```
 
 ---
@@ -502,48 +498,65 @@ results/figures/feature_importance_gradient_boosting.png
 Completed:
 
 - Data loading
-- Encoding-safe CSV loading
-- Missing value handling
-- Churn target creation
-- Data leakage prevention
+- Data cleaning
+- Feature engineering
+- Binary churn target creation
 - Train/test split
 - Logistic Regression baseline
 - Random Forest model
 - Gradient Boosting model
-- Classification metrics
-- Confusion matrices
 - Model comparison
+- ROC-AUC evaluation
 - Feature importance analysis
-- Result visualizations
-- GitHub project setup
+- Business insight generation
+- Streamlit dashboard
+- Dashboard screenshots
+- GitHub-ready structure
 
 Planned next steps:
 
-- Add Streamlit dashboard
-- Add ROC curve visualization
-- Add threshold tuning for business recall
-- Add customer risk scoring
-- Add downloadable churn-risk customer list
-- Add model saving with Joblib
-- Add Docker support
+- Add SHAP-based explainability
+- Add customer segment-level churn analysis
+- Add confusion matrix visualization
+- Add threshold tuning analysis
+- Add more business retention scenarios
+- Add automated tests
 
 ---
 
 ## Technologies Used
 
 - Python
-- NumPy
 - Pandas
+- NumPy
 - Scikit-learn
 - Matplotlib
+- Streamlit
+- Machine Learning
+- Classification
+- Feature Importance
+- Business Analytics
 - Git
 - GitHub
+
+---
+
+## Resume Summary
+
+```text
+Customer Churn Prediction | Python, Scikit-learn, Streamlit, Business Analytics
+
+- Built a telecom customer churn prediction project using Logistic Regression, Random Forest, and Gradient Boosting.
+- Compared classification models using accuracy, precision, recall, F1-score, and ROC-AUC.
+- Achieved 0.911 ROC-AUC with a Gradient Boosting model and identified key churn drivers using feature importance.
+- Created business recommendations for customer retention based on contract type, monthly charges, tenure, referrals, and service features.
+- Built a Streamlit dashboard for model summary, churn risk prediction, and business interpretation.
+```
 
 ---
 
 ## Author
 
 Zahra Ziaee
-
  
-Focus: Customer Analytics, Churn Prediction, Machine Learning, Classification Models, and Business-Oriented Data Science
+Focus: Machine Learning, Customer Analytics, Business Intelligence, Churn Modeling, and Data-Driven Decision Making
