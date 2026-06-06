@@ -541,7 +541,7 @@ Planned next steps:
 
 ---
 
-## Resume Summary
+## Key Takeaways
 
 ```text
 Customer Churn Prediction | Python, Scikit-learn, Streamlit, Business Analytics
