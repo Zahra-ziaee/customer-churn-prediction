@@ -1,3 +1,4 @@
+
 from typing import Tuple
 
 import pandas as pd
@@ -7,6 +8,7 @@ from src.config import (
     ID_COLUMNS,
     LEAKAGE_COLUMNS,
     LOCATION_COLUMNS_TO_DROP,
+    MODEL_ONLY_COLUMNS_TO_DROP,
     PROCESSED_FILE,
     RANDOM_STATE,
     TARGET_BINARY_COLUMN,
@@ -17,7 +19,7 @@ from src.config import (
 
 def create_binary_target(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Convert Customer Status into binary churn target.
+    Convert Customer Status into a binary churn target.
 
     Churned = 1
     Stayed / Joined = 0
@@ -35,8 +37,8 @@ def clean_missing_values(df: pd.DataFrame) -> pd.DataFrame:
     """
     Fill missing values based on column meaning.
 
-    Missing values in service-related columns usually mean the customer
-    does not have that specific service.
+    Missing values in service-related columns usually mean
+    the customer does not have that specific service.
     """
     df = df.copy()
 
@@ -72,7 +74,12 @@ def clean_missing_values(df: pd.DataFrame) -> pd.DataFrame:
 
 def drop_unnecessary_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Drop ID, leakage, and selected location columns.
+    Remove identifiers, target-derived fields, geographic
+    fields, and selected cumulative financial features
+    from the predictive modeling dataset.
+
+    These columns remain available in the original raw
+    dataset for exploratory and business analysis.
     """
     df = df.copy()
 
@@ -80,11 +87,13 @@ def drop_unnecessary_columns(df: pd.DataFrame) -> pd.DataFrame:
         ID_COLUMNS
         + LEAKAGE_COLUMNS
         + LOCATION_COLUMNS_TO_DROP
+        + MODEL_ONLY_COLUMNS_TO_DROP
         + [TARGET_COLUMN]
     )
 
     existing_columns_to_drop = [
-        column for column in columns_to_drop
+        column
+        for column in columns_to_drop
         if column in df.columns
     ]
 
@@ -95,7 +104,12 @@ def drop_unnecessary_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_churn_dataset(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Full preprocessing pipeline before encoding/modeling.
+    Prepare the dataset for predictive modeling.
+
+    Steps:
+    1. Create binary churn target.
+    2. Handle known missing-value categories.
+    3. Remove excluded modeling columns.
     """
     df = create_binary_target(df)
     df = clean_missing_values(df)
@@ -107,6 +121,9 @@ def prepare_churn_dataset(df: pd.DataFrame) -> pd.DataFrame:
 def split_features_target(
     df: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, pd.Series]:
+    """
+    Separate predictive features and target.
+    """
     X = df.drop(columns=[TARGET_BINARY_COLUMN])
     y = df[TARGET_BINARY_COLUMN]
 
@@ -117,6 +134,9 @@ def train_test_split_data(
     X: pd.DataFrame,
     y: pd.Series,
 ):
+    """
+    Create a stratified train/test split.
+    """
     return train_test_split(
         X,
         y,
@@ -127,6 +147,11 @@ def train_test_split_data(
 
 
 def save_processed_data(df: pd.DataFrame) -> None:
+    """
+    Save the processed dataset to CSV.
+    """
     PROCESSED_FILE.parent.mkdir(parents=True, exist_ok=True)
+
     df.to_csv(PROCESSED_FILE, index=False)
+
     print(f"Processed data saved to: {PROCESSED_FILE}")
