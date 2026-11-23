@@ -32,3 +32,15 @@ LOCATION_COLUMNS_TO_DROP = [
     "Latitude",
     "Longitude",
 ]
+# Additional features excluded from predictive modeling.
+# Keep them in the raw dataset for exploratory and business analysis.
+
+MODEL_ONLY_COLUMNS_TO_DROP = [
+    "City",
+    "Zip Code",
+    "Total Charges",
+    "Total Refunds",
+    "Total Extra Data Charges",
+    "Total Long Distance Charges",
+    "Total Revenue",
+]

@@ -1,0 +1,13 @@
+scenario,threshold,contact_cost,flagged_customers,true_positives,false_positives,expected_saved_customers,estimated_net_value
+Low outreach cost,0.2,5.0,2324,1324,1000,132.4,14860.0
+Low outreach cost,0.3,5.0,1934,1228,706,122.80000000000001,14890.000000000004
+Low outreach cost,0.4,5.0,1602,1106,496,110.60000000000001,14110.0
+Low outreach cost,0.5,5.0,1342,1000,342,100.0,13290.0
+Low outreach cost,0.6,5.0,1073,854,219,85.4,11715.0
+Low outreach cost,0.7,5.0,765,649,116,64.9,9155.000000000002
+High outreach cost,0.2,10.0,2324,1324,1000,132.4,3240.0
+High outreach cost,0.3,10.0,1934,1228,706,122.80000000000001,5220.000000000004
+High outreach cost,0.4,10.0,1602,1106,496,110.60000000000001,6100.0
+High outreach cost,0.5,10.0,1342,1000,342,100.0,6580.0
+High outreach cost,0.6,10.0,1073,854,219,85.4,6350.0
+High outreach cost,0.7,10.0,765,649,116,64.9,5330.000000000002
